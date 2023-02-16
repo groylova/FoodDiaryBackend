@@ -94,18 +94,28 @@ class PFC(models.Model):
 class Scale(models.Model):
     """Scale model."""
     scale_name = models.CharField(max_length=200, verbose_name="Scale name")
+    scale_full_name = models.CharField(max_length=300, verbose_name="Scale full name")
     min_amount = models.DecimalField(null=True, max_digits=5, decimal_places=2, verbose_name="Min amount")
     max_amount = models.DecimalField(null=True, max_digits=5, decimal_places=2, verbose_name="Max amount")
     step = models.DecimalField(null=True, max_digits=5, decimal_places=2, verbose_name="Step")
     better_amount = models.DecimalField(null=True, max_digits=5, decimal_places=2, verbose_name="Better amount")
     default = models.BooleanField(default=False)
 
+    def __str__(self):
+        """Method str"""
+        return self.scale_name
+
 
 class Feeling(models.Model):
     """Feeling model."""
     scale = models.ForeignKey(Scale, on_delete=models.CASCADE)
     feeling_name = models.CharField(max_length=200, verbose_name="Feeling name")
+    feeling_full_name = models.CharField(max_length=300, verbose_name="Feeling full name")
     amount = models.DecimalField(verbose_name="Amount", max_digits=5, decimal_places=2)
+
+    def __str__(self):
+        """Method str"""
+        return self.feeling_name
 
 
 class CustomScale(models.Model):
