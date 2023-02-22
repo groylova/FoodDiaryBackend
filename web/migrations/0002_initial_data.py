@@ -46,6 +46,36 @@ def remove_scale(apps, schema_editor):
     feeling.objects.all().delete()
 
 
+def create_pfc_goal(apps, schema_editor):
+    """Create pfc_goal."""
+    pfc_goal = apps.get_model('web', 'PFC_goal')
+    pfc_goal.objects.create(
+        pfc_goal_name="Balance",
+        protein_percent=20,
+        fat_percent=30,
+        carb_percent=50,
+        default=True
+    )
+
+
+def remove_pfc_goal(apps, schema_editor):
+    """Remove pfc_goal."""
+    pfc_goal = apps.get_model('web', 'PFC_goal')
+    pfc_goal.objects.all().delete()
+
+
+def code(apps, schema_editor):
+    """Call initial creation."""
+    create_scale(apps, schema_editor)
+    create_pfc_goal(apps, schema_editor)
+
+
+def reverse_code(apps, schema_editor):
+    """Call removing."""
+    remove_scale(apps, schema_editor)
+    remove_pfc_goal(apps, schema_editor)
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -53,5 +83,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(code=create_scale, reverse_code=remove_scale),
+        migrations.RunPython(code=code, reverse_code=reverse_code),
     ]
