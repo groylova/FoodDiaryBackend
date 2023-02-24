@@ -64,16 +64,76 @@ def remove_pfc_goal(apps, schema_editor):
     pfc_goal.objects.all().delete()
 
 
+def create_food_type(apps, schema_editor):
+    """Create pfc_goal."""
+    initial_food_types = [
+        'Cereals and potatoes',
+        'Vegetables, fruits and berries',
+        'Milk and dairy products',
+        'Fish, poultry, meat and eggs',
+        'Fats, nuts, seeds, oilseeds',
+        'Sugar and sweets, sweet and salty snacks',
+        'Soy products',
+        'Sauces',
+        'Soft drinks',
+        'Alcoholic drinks'
+    ]
+    food_type = apps.get_model('web', 'FoodType')
+    for initial_food_type in initial_food_types:
+        food_type.objects.create(
+            food_type_name=initial_food_type,
+            default=True
+        )
+
+
+def remove_food_type(apps, schema_editor):
+    """Remove food_type."""
+    food_type = apps.get_model('web', 'FoodType')
+    food_type.objects.all().delete()
+
+
+def create_property(apps, schema_editor):
+    """Create property."""
+    initial_properties = [
+        'Cereals', 'Potatoes',
+        'Vegetables', 'Fruits' 'Berries',
+        'Milk', 'Dairy products',
+        'Fish', 'Poultry', 'Meat', 'Eggs',
+        'Fats, nuts, seeds, oilseeds',
+        'Sugar and sweets, sweet and salty snacks',
+        'Soy products',
+        'Sauces',
+        'Soft drinks',
+        'Alcoholic drinks'
+    ]
+    property_food = apps.get_model('web', 'PropertyFood')
+    for initial_prop in initial_properties:
+        property_food.objects.create(
+            property_name=initial_prop,
+            default=True
+        )
+
+
+def remove_property_food(apps, schema_editor):
+    """Remove property_food."""
+    property_food = apps.get_model('web', 'PropertyFood')
+    property_food.objects.all().delete()
+
+
 def code(apps, schema_editor):
     """Call initial creation."""
     create_scale(apps, schema_editor)
     create_pfc_goal(apps, schema_editor)
+    create_food_type(apps, schema_editor)
+    create_property(apps, schema_editor)
 
 
 def reverse_code(apps, schema_editor):
     """Call removing."""
     remove_scale(apps, schema_editor)
     remove_pfc_goal(apps, schema_editor)
+    remove_pfc_goal(apps, schema_editor)
+    remove_property_food(apps, schema_editor)
 
 
 class Migration(migrations.Migration):

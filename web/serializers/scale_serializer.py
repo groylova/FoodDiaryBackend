@@ -55,7 +55,9 @@ class CustomScaleSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         """Create function."""
         scale_data = validated_data.pop('scale')
-        scale = ScaleSerializer().create(scale_data)
+        serializer = ScaleSerializer(data=scale_data)
+        serializer.is_valid()
+        scale = serializer.create(scale_data)
         custom_scale = CustomScale.objects.create(
             scale=scale, **validated_data)
         return custom_scale

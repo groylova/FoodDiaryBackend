@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+# Clients
 class Custom(models.Model):
     """Custom model."""
 
@@ -31,8 +32,9 @@ class Metric(models.Model):
     metric_type = models.IntegerField(choices=Type.choices, verbose_name="Client or doctor")
 
 
-class Nutrition(models.Model):
-    """Nutrition model."""
+# Meal
+class Meal(models.Model):
+    """Meal model."""
 
     class MealType(models.IntegerChoices):
         """Type of Meal."""
@@ -48,53 +50,65 @@ class Nutrition(models.Model):
     )
     datetime = models.DateTimeField(verbose_name="Date and time of event")
     meal_type = models.IntegerField(choices=MealType.choices, verbose_name="Type of meal")
-    photo_s3 = models.URLField(verbose_name="Photo of meal")
-    tmp_photo = models.ImageField()  # TODO: remove in the future
 
 
-class IngredientType(models.Model):
-    """IngredientType model."""
-    ing_type_name = models.CharField(max_length=200, verbose_name="Ingredient type name")
+class FoodType(models.Model):
+    """FoodType model."""
+    food_type_name = models.CharField(max_length=200, verbose_name="Food type name")
     default = models.BooleanField(default=False)
-
-
-class CustomIngredientType(models.Model):
-    """CustomIngredientType model."""
     client = models.ForeignKey(
         Custom,
         on_delete=models.CASCADE,
-        limit_choices_to={'client_type': Custom.Type.client}
+        limit_choices_to={'client_type': Custom.Type.client},
+        null=True
     )
-    ing_type = models.ForeignKey(IngredientType, on_delete=models.CASCADE)
+
+    def __str__(self):
+        """Method str"""
+        return self.food_type_name
 
 
-class PropertyIngType(models.Model):
-    """Property Ing Type."""
+class Food(models.Model):
+    """Food model."""
+    food_name = models.CharField(max_length=200, verbose_name="Food name")
+    food_type = models.ForeignKey(FoodType, on_delete=models.CASCADE)
+    client = models.ForeignKey(
+        Custom,
+        on_delete=models.CASCADE,
+        limit_choices_to={'client_type': Custom.Type.client},
+        null=True
+    )
+
+    def __str__(self):
+        """Method str"""
+        return self.food_name
+
+
+class PropertyFood(models.Model):
+    """Property Food."""
     property_name = models.CharField(max_length=200, verbose_name="Property name")
-    ing_type = models.ManyToManyField(IngredientType)
+    default = models.BooleanField(default=False)
+    food = models.ManyToManyField(Food)
 
 
-class Ingredient(models.Model):
-    """Ingredient model."""
-    nutrition = models.ForeignKey(Nutrition, on_delete=models.CASCADE)
-    ing_type = models.ForeignKey(IngredientType, on_delete=models.CASCADE)
+class MealComposition(models.Model):
+    """MealComposition model."""
+    meal = models.ForeignKey(Meal, on_delete=models.CASCADE, related_name="foods")
+    food = models.ForeignKey(Food, on_delete=models.CASCADE, related_name="meals")
     amount = models.PositiveIntegerField(verbose_name="Amount of grams")
     percent = models.PositiveIntegerField(verbose_name="Percent of portion")
 
 
 class PFC(models.Model):
     """PFC model."""
-    ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
-    protein_amount = models.PositiveIntegerField(verbose_name="Protein amount of grams")
+    food = models.ForeignKey(Food, on_delete=models.CASCADE)
     protein_percent = models.PositiveIntegerField(verbose_name="Protein percent of portion")
-    fat_amount = models.PositiveIntegerField(verbose_name="Fat amount of grams")
     fat_percent = models.PositiveIntegerField(verbose_name="Fat percent of portion")
-    carb_amount = models.PositiveIntegerField(verbose_name="Carb amount of grams")
     carb_percent = models.PositiveIntegerField(verbose_name="Carb percent of portion")
     calories_amount = models.PositiveIntegerField(verbose_name="Amount of calories")
-    calories_percent = models.PositiveIntegerField(verbose_name="Calories percent of portion")
 
 
+# Goal
 class Scale(models.Model):
     """Scale model."""
     scale_name = models.CharField(max_length=200, verbose_name="Scale name")

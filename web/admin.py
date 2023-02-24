@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.apps import apps
-from web.models import Scale, Feeling, PFC_goal, Goal
+from web.models import Scale, Feeling, PFC_goal, Goal, FoodType, PropertyFood
 
 
 class ScaleAdmin(admin.ModelAdmin):
@@ -27,10 +27,23 @@ class PFC_goalAdmin(admin.ModelAdmin):
     list_display = [f.name for f in PFC_goal._meta.fields]
 
 
+class FoodTypeAdmin(admin.ModelAdmin):
+    """FoodType model"""
+    list_display = ['food_type_name', 'default', 'client']
+
+
+class PropertyFoodAdmin(admin.ModelAdmin):
+    """PropertyFood model"""
+    list_display = ['property_name', 'default']
+
+
 admin.site.register(Scale, ScaleAdmin)
 admin.site.register(Feeling, FeelingAdmin)
 admin.site.register(PFC_goal, PFC_goalAdmin)
 admin.site.register(Goal, GoalAdmin)
+admin.site.register(FoodType, FoodTypeAdmin)
+admin.site.register(PropertyFood, PropertyFoodAdmin)
+
 
 all_models = apps.get_models()
 for model in all_models:

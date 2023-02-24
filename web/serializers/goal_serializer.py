@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from web.models import Goal, PFC_goal
+from web.serializers.validation import validate_pfc
 
 
 class PFCGoalSerializer(serializers.ModelSerializer):
@@ -15,12 +16,7 @@ class PFCGoalSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         """Validate function."""
-        protein_percent = data.get('protein_percent')
-        fat_percent = data.get('fat_percent')
-        carb_percent = data.get('carb_percent')
-        if protein_percent or fat_percent or carb_percent:
-            if protein_percent + fat_percent + carb_percent != 100:
-                raise serializers.ValidationError("Summary of protein, fat and carbs have to equal 100%.")
+        validate_pfc(data)
         return super(PFCGoalSerializer, self).validate(data)
 
 
@@ -51,7 +47,9 @@ class GoalSerializer(serializers.ModelSerializer):
         pfc_goal = None
         if validated_data.get('pfc_goal'):
             pfc_goal_data = validated_data.pop('pfc_goal')
-            pfc_goal = PFCGoalSerializer().create(pfc_goal_data)
+            serializer = PFCGoalSerializer(data=pfc_goal_data)
+            serializer.is_valid()
+            pfc_goal = serializer.create(pfc_goal_data)
         goal = Goal.objects.create(
             pfc_goal=pfc_goal, **validated_data)
         return goal
